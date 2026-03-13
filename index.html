@@ -555,10 +555,58 @@
             text-align: center;
         }
 
+        .filter-btn[data-mode="D"] {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        .filter-btn[data-mode="R"] {
+            background: rgba(236, 72, 153, 0.12);
+            border-color: rgba(236, 72, 153, 0.25);
+        }
+
+        .filter-btn[data-mode="F"] {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .filter-btn[data-mode="N"] {
+            background: rgba(148, 163, 184, 0.12);
+            border-color: rgba(148, 163, 184, 0.25);
+        }
+
+        .filter-btn[data-mode="M"] {
+            background: rgba(139, 92, 246, 0.12);
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
         .filter-btn.active {
-            background: rgba(59, 130, 246, 0.3);
-            border-color: rgba(59, 130, 246, 0.8);
             color: var(--text-main);
+        }
+
+        .filter-btn.active[data-mode="D"] {
+            background: rgba(245, 158, 11, 0.35);
+            border-color: rgba(245, 158, 11, 0.75);
+        }
+
+        .filter-btn.active[data-mode="R"] {
+            background: rgba(236, 72, 153, 0.35);
+            border-color: rgba(236, 72, 153, 0.75);
+        }
+
+        .filter-btn.active[data-mode="F"] {
+            background: rgba(59, 130, 246, 0.35);
+            border-color: rgba(59, 130, 246, 0.75);
+        }
+
+        .filter-btn.active[data-mode="N"] {
+            background: rgba(148, 163, 184, 0.35);
+            border-color: rgba(148, 163, 184, 0.75);
+        }
+
+        .filter-btn.active[data-mode="M"] {
+            background: rgba(139, 92, 246, 0.35);
+            border-color: rgba(139, 92, 246, 0.75);
         }
 
         .category-btn {
@@ -1040,11 +1088,11 @@
                     </div>
 
                     <div class="value-mode-buttons" id="valueModeButtons">
-                        <button class="filter-btn mode-btn active" onclick="toggleValueMode('D')">D</button>
-                        <button class="filter-btn mode-btn" onclick="toggleValueMode('R')">R</button>
-                        <button class="filter-btn mode-btn" onclick="toggleValueMode('F')">F</button>
-                        <button class="filter-btn mode-btn" onclick="toggleValueMode('N')">N</button>
-                        <button class="filter-btn mode-btn" onclick="toggleValueMode('M')">M</button>
+                        <button class="filter-btn mode-btn base-btn" data-mode="D" onclick="toggleValueMode('D')">D</button>
+                        <button class="filter-btn mode-btn modifier-btn" data-mode="R" onclick="toggleValueMode('R')">R</button>
+                        <button class="filter-btn mode-btn modifier-btn" data-mode="F" onclick="toggleValueMode('F')">F</button>
+                        <button class="filter-btn mode-btn base-btn" data-mode="N" onclick="toggleValueMode('N')">N</button>
+                        <button class="filter-btn mode-btn base-btn" data-mode="M" onclick="toggleValueMode('M')">M</button>
                     </div>
 
                     <div class="pets-grid" id="petsGrid">
@@ -1172,7 +1220,8 @@
         let currentSlot = 0;
         let selectedMainCategory = 'pets';
         let selectedPetTier = 'legendary';
-        let activeValueModes = new Set(['D']); // D = Default/No Potion
+        let valueBaseMode = 'D'; // D = Default/No Potion, N = Neon, M = Mega
+        let valueModifiers = { R: false, F: false }; // Ride and Fly toggles
         let adminUnlocked = false;
         let editingPetKey = null;
 
@@ -1182,6 +1231,7 @@
             loadPets();
             setupEventListeners();
             setCategory(selectedMainCategory); // Ensure modal UI matches default category
+            toggleValueMode(valueBaseMode); // Ensure D is active by default
         }
 
         // Create 3x3 grid slots
@@ -1391,20 +1441,19 @@ function normalizePetData(raw, sourceFile) {
             return isNaN(n) ? 0 : n;
         }
 
-        function getPetValueForMode(pet, modes) {
-            const useMega = modes.has('M');
-            const useNeon = modes.has('N');
-            const useFly = modes.has('F');
-            const useRide = modes.has('R');
-            const useDefault = modes.has('D');
+        function getPetValueForMode(pet, baseMode, modifiers) {
+            const useMega = baseMode === 'M';
+            const useNeon = baseMode === 'N';
+            const useDefault = baseMode === 'D';
+            const useRide = modifiers.R;
+            const useFly = modifiers.F;
 
             const prefix = useMega ? 'MValue' : useNeon ? 'NValue' : 'RValue';
 
-            let suffix = '';
+            let suffix = ' - NoPotion';
             if (useFly && useRide) suffix = ' - Fly&Ride';
             else if (useFly) suffix = ' - Fly';
             else if (useRide) suffix = ' - Ride';
-            else if (useDefault) suffix = ' - NoPotion';
 
             const key = `${prefix}${suffix}`;
             const primary = parseValueString(pet[key]);
@@ -1421,7 +1470,7 @@ function normalizePetData(raw, sourceFile) {
         function getPetDisplayValue(pet) {
             // Value modes only apply to pets
             if (selectedMainCategory === 'pets') {
-                const value = getPetValueForMode(pet, activeValueModes);
+                const value = getPetValueForMode(pet, valueBaseMode, valueModifiers);
                 if (value === 0) return '0';
                 return value.toString();
             }
@@ -1645,9 +1694,10 @@ function normalizePetData(raw, sourceFile) {
                 valueButtons.style.display = isPets ? 'flex' : 'none';
             }
 
-            // When switching away from pets, reset mode selection to default (D)
+            // When switching away from pets, reset to defaults (D, no modifiers)
             if (category !== 'pets') {
-                activeValueModes = new Set(['D']);
+                valueBaseMode = 'D';
+                valueModifiers = { R: false, F: false };
                 document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
                 const defaultBtn = document.querySelector(`.mode-btn[onclick="toggleValueMode('D')"]`);
                 if (defaultBtn) defaultBtn.classList.add('active');
@@ -1666,19 +1716,25 @@ function normalizePetData(raw, sourceFile) {
             populatePetsGrid();
         }
 
-        // Value mode picker (D = Default/No Potion, R = Ride, F = Fly, N = Neon, M = Mega)
+        // Value mode picker (D/N/M are base modes, R/F are modifiers)
         function toggleValueMode(mode) {
-            if (activeValueModes.has(mode)) {
-                activeValueModes.delete(mode);
-            } else {
-                activeValueModes.add(mode);
+            if (mode === 'D' || mode === 'N' || mode === 'M') {
+                // Base mode: switch to the selected base and reset modifiers
+                valueBaseMode = mode;
+                valueModifiers = { R: false, F: false };
+
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                const baseBtn = document.querySelector(`.mode-btn[onclick="toggleValueMode('${mode}')"]`);
+                if (baseBtn) baseBtn.classList.add('active');
+                return;
             }
 
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            activeValueModes.forEach(active => {
-                const btn = document.querySelector(`.mode-btn[onclick="toggleValueMode('${active}')"]`);
-                if (btn) btn.classList.add('active');
-            });
+            // Modifiers (toggle)
+            if (mode === 'R' || mode === 'F') {
+                valueModifiers[mode] = !valueModifiers[mode];
+                const btn = document.querySelector(`.mode-btn[onclick="toggleValueMode('${mode}')"]`);
+                if (btn) btn.classList.toggle('active', valueModifiers[mode]);
+            }
 
             populatePetsGrid();
             updateTradeComparison();
@@ -1727,7 +1783,7 @@ function normalizePetData(raw, sourceFile) {
             let total = 0;
             Object.values(offer).forEach(pet => {
                 if (!pet) return;
-                total += getPetValueForMode(pet, activeValueModes);
+                total += getPetValueForMode(pet, valueBaseMode, valueModifiers);
             });
             return total;
         }
