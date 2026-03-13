@@ -6,9 +6,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Custom Cursor & Aura Overlay ---
   const cursorDot = document.querySelector('.cursor-dot');
   const cursorOutline = document.querySelector('.cursor-outline');
-  
-  // Update mouse position for custom cursor and bento shimmer
+  const root = document.documentElement;
+  let mouseX = 0;
+  let mouseY = 0;
+
+  // Update mouse position for custom cursor, background parallax, and card shimmer
   window.addEventListener('mousemove', (e) => {
+    // Normalize mouse position to range [-1, 1]
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+    root.style.setProperty('--mouse-x', mouseX.toFixed(3));
+    root.style.setProperty('--mouse-y', mouseY.toFixed(3));
+
     // Crosshair logic
     if(cursorDot && cursorOutline) {
       cursorDot.style.left = `${e.clientX}px`;
@@ -121,9 +131,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (textArray.length) setTimeout(type, newTextDelay + 250);
 
-  // --- 3D Tilted Card & Bento Shimmer Effect ---
-  // Using querySelectorAll for all cards tagged with data-tilt
-  const tiltElements = document.querySelectorAll('.bento-card[data-tilt]');
+  // --- 3D Tilted Card & Parallax Effects ---
+  // Using querySelectorAll for all elements tagged with data-tilt
+  const tiltElements = document.querySelectorAll('[data-tilt]');
 
   tiltElements.forEach(el => {
     el.addEventListener('mousemove', handleTilt);
@@ -140,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // Update CSS variables for Shimmer before element
+    // Update CSS variables for shimmer highlights
     el.style.setProperty('--mouse-x', `${x}px`);
     el.style.setProperty('--mouse-y', `${y}px`);
 
@@ -148,12 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const centerX = x - width / 2;
     const centerY = y - height / 2;
 
-    // Constrain the rotation to a small angle (smooth ReactBits feel)
-    const rotateX = -(centerY / height) * 15;
-    const rotateY = (centerX / width) * 15;
+    // Constrain the rotation to a small angle for a subtle, responsive feel
+    const rotateX = -(centerY / height) * 10;
+    const rotateY = (centerX / width) * 10;
 
     requestAnimationFrame(() => {
-      // Scale slightly up and apply 3D transform
       el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     });
   }
@@ -165,5 +174,69 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // --- Canvas Particle Background (subtle, responsive to mouse) ---
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const particles = [];
+  const particleCount = 80;
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    if (!canvas) return;
+    particles.length = 0;
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 1 + Math.random() * 2,
+        alpha: 0.1 + Math.random() * 0.2,
+        baseX: 0,
+        baseY: 0,
+        speedX: (Math.random() - 0.5) * 0.2,
+        speedY: (Math.random() - 0.5) * 0.2
+      });
+    }
+  }
+
+  function updateParticles() {
+    if (!ctx || !canvas) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      // Parallax offset based on mouse
+      const offsetX = mouseX * 30;
+      const offsetY = mouseY * 30;
+
+      p.x += p.speedX + (mouseX * 0.1);
+      p.y += p.speedY + (mouseY * 0.1);
+
+      // Wrap particles around edges
+      if (p.x < -50) p.x = canvas.width + 50;
+      if (p.x > canvas.width + 50) p.x = -50;
+      if (p.y < -50) p.y = canvas.height + 50;
+      if (p.y > canvas.height + 50) p.y = -50;
+
+      ctx.beginPath();
+      ctx.arc(p.x + offsetX, p.y + offsetY, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(99, 179, 255, ${p.alpha})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(updateParticles);
+  }
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    createParticles();
+  });
+
+  resizeCanvas();
+  createParticles();
+  requestAnimationFrame(updateParticles);
 
 });

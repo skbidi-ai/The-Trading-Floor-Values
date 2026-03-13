@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GS Value Calculator</title>
     <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1414528231834386545/1472158249988915234/image.png">
+    <link rel="stylesheet" href="boxicons.min.css">
+    <link rel="stylesheet" href="style.css">
     <style>
         * {
             margin: 0;
@@ -13,26 +15,30 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #e8e0d0;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
             min-height: 100vh;
-            color: #6b6b6b;
+            color: var(--text-main);
         }
 
 
-        /* Header - exactly like elvebredd */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 30px 60px;
-            background: transparent;
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(18px);
         }
 
         .logo {
             font-size: 36px;
-            font-weight: 700;
-            color: #404040;
+            font-weight: 800;
+            color: var(--text-main);
             letter-spacing: -1px;
         }
 
@@ -44,36 +50,40 @@
 
         .nav-tab {
             padding: 12px 25px;
-            background: rgba(230, 220, 205, 0.6);
+            background: rgba(15, 23, 42, 0.55);
             border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: var(--transition);
             font-size: 16px;
-            font-weight: 500;
-            color: #ff6666;
-            border: 1px solid transparent;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
         }
 
         .nav-tab:hover {
-            background: rgba(197, 184, 149, 0.3);
-            border-color: #ff6666;
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--text-main);
+            border-color: rgba(139, 92, 246, 0.4);
         }
 
         .nav-tab.active {
-            background: rgba(197, 184, 149, 0.4);
-            border-color: #ff6666;
-            color: #FF3E3E;
+            background: rgba(139, 92, 246, 0.25);
+            border-color: rgba(139, 92, 246, 0.6);
+            color: var(--text-main);
         }
 
         /* Pet Weight Calculator Styles */
         .weight-calculator {
             display: none;
-            max-width: 600px;
+            max-width: 620px;
             margin: 50px auto;
             padding: 40px;
-            background: rgba(230, 220, 205, 0.8);
-            border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(16px);
         }
 
         .weight-calculator.active {
@@ -84,7 +94,7 @@
             text-align: center;
             font-size: 28px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
             margin-bottom: 30px;
         }
 
@@ -96,41 +106,45 @@
             display: block;
             font-size: 16px;
             font-weight: 600;
-            color: #404040;
+            color: var(--text-muted);
             margin-bottom: 8px;
         }
 
         .form-input {
             width: 100%;
-            padding: 12px 20px;
-            border: 2px solid #d8d2c5;
+            padding: 14px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 15px;
             font-size: 16px;
-            color: #404040;
-            background: rgba(255, 250, 240, 0.9);
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.06);
             outline: none;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
 
         .form-input:focus {
-            border-color: #c5b895;
+            border-color: rgba(139, 92, 246, 0.7);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
         }
 
         .calculate-btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #c5b895 0%, #d4c4a0 100%);
-            border: none;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(14, 165, 233, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             font-size: 18px;
             font-weight: 600;
-            color: #404040;
+            color: var(--text-main);
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
         }
 
         .calculate-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.5);
         }
 
         .results-container {
@@ -149,65 +163,68 @@
             margin-top: 20px;
             max-height: 400px;
             overflow-y: auto;
-            padding: 10px;
-            background: rgba(255, 250, 240, 0.5);
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .age-card {
-            background: rgba(255, 255, 250, 0.9);
-            border-radius: 12px;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px;
             text-align: center;
-            border: 1px solid #e0e0e0;
-            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .age-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
         }
 
         .age-number {
             font-size: 12px;
             font-weight: 600;
-            color: #888;
+            color: var(--text-muted);
             margin-bottom: 4px;
         }
 
         .weight-value {
             font-size: 14px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
         }
 
         .current-age {
-            background: rgba(197, 184, 149, 0.2);
-            border-color: #c5b895;
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
         }
 
         .target-highlight {
-            background: rgba(180, 200, 120, 0.2);
-            border-color: #b4c878;
+            background: rgba(14, 165, 233, 0.2);
+            border-color: rgba(14, 165, 233, 0.4);
         }
 
-        /* Trade Comparison Header - exactly like elvebredd */
+        /* Trade Comparison Header */
 .trade-header {
     position: relative;
 
     width: 53vw;
     margin: 0 auto 50px auto;
 
-    background: rgba(230, 220, 205, 0.8);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 75px;
-    padding: 30px 20px;
+    padding: 30px 25px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(18px);
 
     z-index: 1;
 }
@@ -216,13 +233,14 @@
     content: "";
     position: absolute;
 
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
 
-    border-radius: 78px; /* 75 + border thickness */
-    background: linear-gradient(45deg, #dcd6ce,#eae6e0, #faf9f8);
+    border-radius: 80px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(14, 165, 233, 0.2), rgba(139, 92, 246, 0.35));
+    filter: blur(12px);
 
     z-index: -1;
 }
@@ -233,12 +251,12 @@
         .offer-value {
             font-size: 52px;
             font-weight: 700;
-            color: #6b6b70;
+            color: var(--text-main);
         }
 
         .offer-label {
             font-size: 16px;
-            color: #8a8a8a;
+            color: var(--text-muted);
             margin-top: 10px;
             font-weight: 500;
             letter-spacing: 0.8px;
@@ -254,14 +272,14 @@
 
 .status-indicator {
     position: relative;
-    background: rgba(245, 240, 230, 0.9);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 30px;
     padding: 12px 35px;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
     gap: 30px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     z-index: 1; /* keep content above the pseudo-element */
 }
 
@@ -273,7 +291,7 @@
     right: -3px;
     bottom: -3px;
     border-radius: 33px; /* slightly bigger than main element */
-    background: linear-gradient(45deg, #faf9f8, #eae6e0, #dcd6ce); /* silver gradient */
+    background: linear-gradient(45deg, rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.25), rgba(14, 165, 233, 0.4));
     z-index: -1; /* behind the element */
 }
 
@@ -281,42 +299,43 @@
         .status-text {
             font-size: 30px;
             font-weight: 600;
-            color: #ddd6cb;
+            color: var(--text-main);
             letter-spacing: 0.8px;
         }
 
         .status-text.win {
-            color: #77c377; /* Green for win */
+            color: var(--accent-primary);
         }
 
         .status-text.fair {
-            color: #ffcc00; /* Yellow for fair */
+            color: var(--accent-secondary);
         }
 
         .status-text.lose {
-            color: #ff6666; /* Red for lose */
+            color: var(--accent-tertiary);
         }
 
         .progress-bar {
             width: 600px;
             height: 15px;
-            background: #d5d5d5;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 999px;
             overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff8c0a 0%, #ff704d 50%, #ff6666 100%);
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.85) 0%, rgba(14, 165, 233, 0.85) 50%, rgba(139, 92, 246, 0.85) 100%);
             border-radius: 4px;
             transition: width 0.3s ease;
-            box-shadow: inset 0 0 8px rgba(255,255,255,0.3);
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);
         }
 
         .difference {
             font-size: 24px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
             margin-top: 15px;
         }
 
@@ -338,24 +357,23 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            padding: 8px;
-            background: rgba(
-255, 102, 102);
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 0px solid #ff6666;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.65);
         }
 
         /* NO red/blue borders - same muted color for both */
         .their-grid {
-            border-color: #ff6666;
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         .pet-slot {
             width: 120px;
             height: 120px;
-            background: rgba(250, 245, 235, 0.9);
-            border: 2px solid #ff6666;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.14);
             border-radius: 17px;
             display: flex;
             align-items: center;
@@ -363,22 +381,19 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
+            overflow: hidden;
         }
 
 .pet-slot:hover {
-    background: linear-gradient(
-        45deg,
-        #faf9f8,
-        #eae6e0,
-        #dcd6ce
-    );
-    border-color: #ff6666;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(59, 130, 246, 0.85);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.45);
 }
 
 
         .pet-slot.filled {
-            background: rgba(255, 216, 216);
-            border: 2px solid #FF4D4D;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid rgba(59, 130, 246, 0.65);
             padding: 5px;
         }
 
@@ -391,11 +406,9 @@
 
         .add-button {
             font-size: 28px;
-            color: #FFBFBF;
+            color: rgba(59, 130, 246, 0.9);
             font-weight: 300;
         }
-
-        
 
         .pet-name {
             position: absolute;
@@ -403,7 +416,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 10px;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 500;
             white-space: nowrap;
             max-width: 90px;
@@ -431,14 +444,16 @@
         }
 
         .modal-content {
-            background: #e8e0d0;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 25px;
             padding: 40px;
             width: 85%;
             max-width: 700px;
             max-height: 70vh;
             overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(18px);
         }
 
         .modal-header {
@@ -451,7 +466,7 @@
         .modal-title {
             font-size: 19px;
             font-weight: 600;
-            color: #404040;
+            color: var(--text-main);
         }
 
         .close-btn {
@@ -479,17 +494,18 @@
         .search-bar {
             width: 100%;
             padding: 15px 25px;
-            border: 2px solid #d0d0d0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 25px;
             font-size: 16px;
             outline: none;
-            background: rgba(255, 250, 240, 0.8);
-            color: #404040;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
         }
 
         .search-bar:focus {
-            border-color: #b8b8b8;
-            box-shadow: 0 0 0 3px rgba(180, 180, 180, 0.1);
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         .filter-buttons {
@@ -500,19 +516,20 @@
 
         .filter-btn {
             padding: 10px 20px;
-            border: 1px solid #d0d0d0;
-            background: rgba(255, 250, 240, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 500;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
 
         .filter-btn.active {
-            background: rgba(197, 184, 149, 0.2);
-            border-color: #c5b895;
-            color: #6b6b6b;
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.8);
+            color: var(--text-main);
         }
 
         .pets-grid {
@@ -525,19 +542,19 @@
         }
 
         .pet-card {
-            background: rgba(255, 250, 240, 0.9);
-            border-radius: 12px;
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 18px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             text-align: center;
-            border: 1px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .pet-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-            border-color: #000000;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55);
+            border-color: rgba(59, 130, 246, 0.6);
         }
 
         .pet-card img {
@@ -551,13 +568,13 @@
         .pet-card-name {
             font-size: 12px;
             font-weight: 600;
-            color: #404040;
+            color: var(--text-main);
             margin-bottom: 4px;
         }
 
         .pet-card-value {
             font-size: 11px;
-            color: #c5b895;
+            color: var(--accent-primary);
             font-weight: 500;
         }
 
@@ -567,9 +584,11 @@
             max-width: 900px;
             margin: 50px auto;
             padding: 40px;
-            background: rgba(230, 220, 205, 0.8);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(16px);
         }
 
         .admin-panel.active {
@@ -580,7 +599,7 @@
             text-align: center;
             font-size: 28px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
             margin-bottom: 30px;
         }
 
@@ -608,18 +627,20 @@
 
         .admin-btn {
             padding: 12px 25px;
-            background: linear-gradient(135deg, #c5b895 0%, #d4c4a0 100%);
-            border: none;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.85) 0%, rgba(14, 165, 233, 0.85) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 20px;
             font-size: 16px;
             font-weight: 600;
-            color: #404040;
+            color: var(--text-main);
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
         }
 
         .admin-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.7);
         }
 
         /* Pets Cards Grid */
@@ -631,15 +652,17 @@
         }
 
         .pet-admin-card {
-            background: rgba(255, 250, 240, 0.9);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s ease;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .pet-admin-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.75);
         }
 
         .pet-card-header {
@@ -648,13 +671,13 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .pet-card-name {
             font-size: 18px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
         }
 
         .pet-card-actions {
@@ -676,7 +699,7 @@
         .pet-field-label {
             font-size: 12px;
             font-weight: 600;
-            color: #888;
+            color: var(--text-muted);
             margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -684,7 +707,7 @@
 
         .pet-field-value {
             font-size: 14px;
-            color: #404040;
+            color: var(--text-main);
             font-weight: 500;
         }
 
@@ -699,9 +722,9 @@
 
         .pet-image-url {
             font-size: 12px;
-            color: #888;
+            color: var(--text-muted);
             word-break: break-all;
-            background: rgba(240, 235, 225, 0.5);
+            background: rgba(255, 255, 255, 0.08);
             padding: 8px;
             border-radius: 8px;
             margin-top: 5px;
@@ -709,17 +732,18 @@
 
         .edit-input {
             width: 100%;
-            padding: 6px 10px;
-            border: 1px solid #d8d2c5;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             font-size: 13px;
-            color: #404040;
-            background: rgba(255, 250, 240, 0.9);
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         .edit-input:focus {
-            border-color: #c5b895;
+            border-color: rgba(59, 130, 246, 0.7);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
         }
 
         .action-btn {
@@ -760,10 +784,13 @@
         /* Add Pet Form */
         .add-pet-form {
             display: none;
-            background: rgba(255, 250, 240, 0.9);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(16px);
         }
 
         .add-pet-form.show {
@@ -791,22 +818,24 @@
         .footer {
             margin-top: 60px;
             padding: 40px 60px;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
             text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .footer-title {
             font-size: 36px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-main);
             letter-spacing: -1px;
             margin-bottom: 10px;
         }
 
         .footer-description {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
-            color: #404040;
+            color: var(--text-muted);
             letter-spacing: -1px;
         }
 
@@ -840,7 +869,7 @@
             }
 
             .footer-title, .footer-description {
-                font-size: 5px;
+                font-size: 2.5rem;
             }
 
             .table-header, .table-row {
@@ -865,6 +894,10 @@
     </style>
 </head>
 <body>
+    <div class="aurora-bg"></div>
+    <canvas id="canvas"></canvas>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
     <!-- Header -->
     <div class="header">
         <div class="logo">Game Services</div>
@@ -876,9 +909,9 @@
     </div>
 
     <!-- Main Container -->
-    <div class="container" id="tradeCalculator">
+    <div class="container" id="tradeCalculator" data-tilt>
         <!-- Trade Comparison Header -->
-        <div class="trade-header">
+        <div class="trade-header" data-tilt>
             <div class="offer-side">
                 <div class="offer-value" id="yourValue">0</div>
                 <div class="offer-label">YOUR OFFER</div>
@@ -922,7 +955,7 @@
 
     <!-- Search Modal -->
     <div class="modal" id="searchModal">
-        <div class="modal-content">
+        <div class="modal-content" data-tilt>
             <div class="modal-header">
                 <div class="modal-title">Game Services Values</div>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -944,7 +977,7 @@
     </div>
 
     <!-- Pet Weight Calculator Section -->
-    <div class="weight-calculator" id="weightCalculator">
+    <div class="weight-calculator" id="weightCalculator" data-tilt>
         <div class="calculator-title">Pet Weight Calculator</div>
 
         <div class="form-group">
@@ -965,7 +998,7 @@
         <button class="calculate-btn" onclick="calculateWeights()">Calculate Weights</button>
 
         <div class="results-container" id="resultsContainer">
-            <h3 style="text-align: center; color: #404040; margin-bottom: 15px;">Weight Predictions</h3>
+            <h3 style="text-align: center; color: var(--text-main); margin-bottom: 15px;">Weight Predictions</h3>
             <div class="results-grid" id="resultsGrid">
                 <!-- Results will be populated here -->
             </div>
@@ -973,7 +1006,7 @@
     </div>
 
     <!-- Admin Panel Section -->
-    <div class="admin-panel" id="adminPanel">
+    <div class="admin-panel" id="adminPanel" data-tilt>
         <div class="admin-title">Pet Database Admin Panel</div>
 
         <div class="password-section" id="passwordSection">
@@ -992,7 +1025,7 @@
 
             <!-- Add Pet Form -->
             <div class="add-pet-form" id="addPetForm">
-                <h3 style="text-align: center; color: #404040; margin-bottom: 20px;">Add New Pet</h3>
+                <h3 style="text-align: center; color: var(--text-main); margin-bottom: 20px;">Add New Pet</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Pet Name</label>
@@ -1046,7 +1079,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer">
+    <div class="footer" data-tilt>
         <div class="footer-title">GS</div>
         <div class="footer-description">Trade Calculator</div>
     </div>
@@ -1817,5 +1850,6 @@ async function loadPets() {
             updateGridDisplay();
         }
     </script>
+    <script src="script.js"></script>
 </body>
 </html>

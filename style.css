@@ -15,6 +15,10 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --radius-lg: 24px;
   --radius-md: 16px;
+
+  /* Mouse-driven parallax */
+  --mouse-x: 0;
+  --mouse-y: 0;
 }
 
 /* --- Base & Scrollbar --- */
@@ -93,7 +97,9 @@ body {
   height: 100vh;
   z-index: -2;
   overflow: hidden;
-  background: var(--bg-dark);
+  background: radial-gradient(circle at calc(50% + var(--mouse-x) * 20px) calc(50% + var(--mouse-y) * 20px), rgba(59, 130, 246, 0.25), transparent 55%),
+              radial-gradient(circle at calc(20% + var(--mouse-x) * 30px) calc(30% + var(--mouse-y) * 30px), rgba(14, 165, 233, 0.15), transparent 60%),
+              radial-gradient(circle at calc(75% + var(--mouse-x) * 25px) calc(70% + var(--mouse-y) * 25px), rgba(139, 92, 246, 0.14), transparent 60%);
 }
 
 /* Particle Canvas Layer */
