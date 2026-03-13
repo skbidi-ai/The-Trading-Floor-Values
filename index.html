@@ -509,14 +509,40 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
-        .filter-buttons {
+        .modal-body {
+            display: flex;
+            gap: 20px;
+        }
+
+        .modal-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 140px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 10px;
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .modal-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-buttons,
+        .tier-buttons,
+        .value-mode-buttons {
             display: flex;
             gap: 12px;
-            margin-bottom: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
         }
 
         .filter-btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             background: rgba(255, 255, 255, 0.06);
             border-radius: 25px;
@@ -525,6 +551,31 @@
             color: var(--text-muted);
             font-weight: 500;
             transition: background 0.2s ease, border-color 0.2s ease;
+            min-width: 56px;
+            text-align: center;
+        }
+
+        .filter-btn.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.8);
+            color: var(--text-main);
+        }
+
+        .category-btn {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 18px;
+            justify-content: flex-start;
+        }
+
+        .tier-btn {
+            font-size: 12px;
+            padding: 10px 14px;
+        }
+
+        /* Value mode buttons appear only for 'pets' category */
+        .value-mode-buttons {
+            justify-content: flex-start;
         }
 
         .filter-btn.active {
@@ -962,37 +1013,44 @@
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
 
-            <div class="search-section">
-                <input type="text" class="search-bar" id="searchInput" placeholder="Search" />
-            </div>
+            <div class="modal-body">
+                <div class="modal-sidebar" id="categorySidebar">
+                    <button class="category-btn active" onclick="setCategory('pets')">Pets</button>
+                    <button class="category-btn" onclick="setCategory('toys')">Toys</button>
+                    <button class="category-btn" onclick="setCategory('eggs')">Eggs</button>
+                    <button class="category-btn" onclick="setCategory('food')">Food</button>
+                    <button class="category-btn" onclick="setCategory('gifts')">Gifts</button>
+                    <button class="category-btn" onclick="setCategory('petwear')">Pet Wear</button>
+                    <button class="category-btn" onclick="setCategory('vehicles')">Vehicles</button>
+                    <button class="category-btn" onclick="setCategory('strollers')">Strollers</button>
+                    <button class="category-btn" onclick="setCategory('other')">Other</button>
+                </div>
 
-            <div class="filter-buttons">
-                <button class="filter-btn category-btn active" onclick="setCategory('all')">All</button>
-                <button class="filter-btn category-btn" onclick="setCategory('legendary')">Legendary</button>
-                <button class="filter-btn category-btn" onclick="setCategory('ultrarare')">Ultra Rare</button>
-                <button class="filter-btn category-btn" onclick="setCategory('rare')">Rare</button>
-                <button class="filter-btn category-btn" onclick="setCategory('uncommon')">Uncommon</button>
-                <button class="filter-btn category-btn" onclick="setCategory('common')">Common</button>
-                <button class="filter-btn category-btn" onclick="setCategory('toys')">Toys</button>
-                <button class="filter-btn category-btn" onclick="setCategory('eggs')">Eggs</button>
-                <button class="filter-btn category-btn" onclick="setCategory('food')">Food</button>
-                <button class="filter-btn category-btn" onclick="setCategory('gifts')">Gifts</button>
-                <button class="filter-btn category-btn" onclick="setCategory('petwear')">Pet Wear</button>
-                <button class="filter-btn category-btn" onclick="setCategory('strollers')">Strollers</button>
-                <button class="filter-btn category-btn" onclick="setCategory('vehicles')">Vehicles</button>
-                <button class="filter-btn category-btn" onclick="setCategory('other')">Other</button>
-            </div>
+                <div class="modal-main">
+                    <div class="search-section">
+                        <input type="text" class="search-bar" id="searchInput" placeholder="Search" />
+                    </div>
 
-            <div class="value-mode-buttons">
-                <button class="filter-btn mode-btn active" onclick="toggleValueMode('D')">D</button>
-                <button class="filter-btn mode-btn" onclick="toggleValueMode('R')">R</button>
-                <button class="filter-btn mode-btn" onclick="toggleValueMode('F')">F</button>
-                <button class="filter-btn mode-btn" onclick="toggleValueMode('N')">N</button>
-                <button class="filter-btn mode-btn" onclick="toggleValueMode('M')">M</button>
-            </div>
+                    <div class="tier-buttons" id="tierButtons">
+                        <button class="filter-btn tier-btn active" onclick="setPetTier('legendary')">Legendary</button>
+                        <button class="filter-btn tier-btn" onclick="setPetTier('ultrarare')">Ultra Rare</button>
+                        <button class="filter-btn tier-btn" onclick="setPetTier('rare')">Rare</button>
+                        <button class="filter-btn tier-btn" onclick="setPetTier('uncommon')">Uncommon</button>
+                        <button class="filter-btn tier-btn" onclick="setPetTier('common')">Common</button>
+                    </div>
 
-            <div class="pets-grid" id="petsGrid">
-                <!-- Pet cards will be populated by JavaScript -->
+                    <div class="value-mode-buttons" id="valueModeButtons">
+                        <button class="filter-btn mode-btn active" onclick="toggleValueMode('D')">D</button>
+                        <button class="filter-btn mode-btn" onclick="toggleValueMode('R')">R</button>
+                        <button class="filter-btn mode-btn" onclick="toggleValueMode('F')">F</button>
+                        <button class="filter-btn mode-btn" onclick="toggleValueMode('N')">N</button>
+                        <button class="filter-btn mode-btn" onclick="toggleValueMode('M')">M</button>
+                    </div>
+
+                    <div class="pets-grid" id="petsGrid">
+                        <!-- Pet cards will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1112,7 +1170,8 @@
         let theirOffer = [];
         let currentGrid = 'your';
         let currentSlot = 0;
-        let selectedCategory = 'all';
+        let selectedMainCategory = 'pets';
+        let selectedPetTier = 'legendary';
         let activeValueModes = new Set(['D']); // D = Default/No Potion
         let adminUnlocked = false;
         let editingPetKey = null;
@@ -1122,6 +1181,7 @@
             createGridSlots();
             loadPets();
             setupEventListeners();
+            setCategory(selectedMainCategory); // Ensure modal UI matches default category
         }
 
         // Create 3x3 grid slots
@@ -1152,17 +1212,19 @@
 async function loadPets() {
     // Load multiple JSON files (new format) and fall back to legacy files if needed.
     const jsonFiles = [
-        'toys_values.json',
-        'eggs_values.json',
-        'food_values.json',
-        'gifts_values.json',
-        'legendary_values.json',
-        'petwear_values.json',
-        'rare_values.json',
-        'strollers_values.json',
-        'ultrarare_values.json',
-        'uncommon_values.json',
-        'vehicle_values.json',
+                // Pets first (ordering will be enforced later)
+                'legendary_values.json',
+                'ultrarare_values.json',
+                'rare_values.json',
+                'uncommon_values.json',
+                'common_values.json',
+                // Other categories
+                'toys_values.json',
+                'eggs_values.json',
+                'food_values.json',
+                'gifts_values.json',
+                'petwear_values.json',
+                'strollers_values.json',
         // Legacy fallback
         'pet_values.json'
     ];
@@ -1204,6 +1266,19 @@ async function loadPets() {
         });
 
         allPets = Array.from(petMap.values());
+
+        // Sort pets so tier files appear in desired order for the pets category
+        const tierOrder = ['legendary', 'ultrarare', 'rare', 'uncommon', 'common'];
+        allPets.sort((a, b) => {
+            const aSource = (a.__sourceFile || '').toLowerCase();
+            const bSource = (b.__sourceFile || '').toLowerCase();
+
+            const aIndex = tierOrder.findIndex(t => aSource.includes(t));
+            const bIndex = tierOrder.findIndex(t => bSource.includes(t));
+
+            if (aIndex !== bIndex) return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+            return 0;
+        });
 
         console.log('Successfully loaded', allPets.length, 'pets from JSON files');
         populatePetsGrid();
@@ -1251,17 +1326,32 @@ function normalizePetData(raw, sourceFile) {
             const type = (pet.type || pet.Type || '').toString().toLowerCase();
             const source = (pet.__sourceFile || '').toString().toLowerCase();
 
+            if (category === 'pets') {
+                // Pets category only includes these tier files
+                if (selectedPetTier && selectedPetTier !== 'all') {
+                    return source.includes(selectedPetTier);
+                }
+                // If no pet tier is selected, show all pet tiers
+                return (
+                    source.includes('legendary') ||
+                    source.includes('ultrarare') ||
+                    source.includes('rare') ||
+                    source.includes('uncommon') ||
+                    source.includes('common')
+                );
+            }
+
             switch (category) {
                 case 'legendary':
-                    return rarity === 'legendary' || source.includes('legendary');
+                    return source.includes('legendary');
                 case 'ultrarare':
-                    return rarity === 'ultrarare' || source.includes('ultrarare');
+                    return source.includes('ultrarare');
                 case 'rare':
-                    return rarity === 'rare' || source.includes('rare');
+                    return source.includes('rare');
                 case 'uncommon':
-                    return rarity === 'uncommon' || source.includes('uncommon');
+                    return source.includes('uncommon');
                 case 'common':
-                    return rarity === 'common' || source.includes('common');
+                    return source.includes('common');
                 case 'toys':
                     return type === 'toys' || source.includes('toys');
                 case 'eggs':
@@ -1278,11 +1368,7 @@ function normalizePetData(raw, sourceFile) {
                     return type === 'vehicles' || source.includes('vehicle');
                 case 'other':
                     // Anything not included above
-                    return !petMatchesCategory(pet, 'legendary')
-                        && !petMatchesCategory(pet, 'ultrarare')
-                        && !petMatchesCategory(pet, 'rare')
-                        && !petMatchesCategory(pet, 'uncommon')
-                        && !petMatchesCategory(pet, 'common')
+                    return !petMatchesCategory(pet, 'pets')
                         && !petMatchesCategory(pet, 'toys')
                         && !petMatchesCategory(pet, 'eggs')
                         && !petMatchesCategory(pet, 'food')
@@ -1333,9 +1419,16 @@ function normalizePetData(raw, sourceFile) {
         }
 
         function getPetDisplayValue(pet) {
-            const value = getPetValueForMode(pet, activeValueModes);
-            if (value === 0) return '0';
-            return value.toString();
+            // Value modes only apply to pets
+            if (selectedMainCategory === 'pets') {
+                const value = getPetValueForMode(pet, activeValueModes);
+                if (value === 0) return '0';
+                return value.toString();
+            }
+
+            // Non-pets just show base value field
+            const baseValue = parseValueString(pet.Value || pet.value);
+            return baseValue === 0 ? '0' : baseValue.toString();
         }
 
         // Populate pets grid in modal
@@ -1345,7 +1438,7 @@ function normalizePetData(raw, sourceFile) {
             petsGrid.innerHTML = '';
 
             allPets
-                .filter(pet => petMatchesCategory(pet, selectedCategory))
+                .filter(pet => petMatchesCategory(pet, selectedMainCategory))
                 .forEach(pet => {
                     const nameLower = (pet.name || '').toString().toLowerCase();
                     if (searchTerm && !nameLower.includes(searchTerm)) return;
@@ -1535,12 +1628,39 @@ function normalizePetData(raw, sourceFile) {
             document.getElementById('searchModal').classList.remove('show');
         }
 
-        // Category picker
+        // Category picker (main categories on the side)
         function setCategory(category) {
-            selectedCategory = category;
+            selectedMainCategory = category;
 
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             const clicked = document.querySelector(`.category-btn[onclick="setCategory('${category}')"]`);
+            if (clicked) clicked.classList.add('active');
+
+            // Show/hide pet-tier buttons and value mode buttons only when in pet category
+            const tierButtons = document.getElementById('tierButtons');
+            const valueButtons = document.getElementById('valueModeButtons');
+            if (tierButtons && valueButtons) {
+                const isPets = category === 'pets';
+                tierButtons.style.display = isPets ? 'flex' : 'none';
+                valueButtons.style.display = isPets ? 'flex' : 'none';
+            }
+
+            // When switching away from pets, reset mode selection to default (D)
+            if (category !== 'pets') {
+                activeValueModes = new Set(['D']);
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                const defaultBtn = document.querySelector(`.mode-btn[onclick="toggleValueMode('D')"]`);
+                if (defaultBtn) defaultBtn.classList.add('active');
+            }
+
+            populatePetsGrid();
+        }
+
+        // Subcategory picker for pets (legendary/ultrarare/rare/uncommon/common)
+        function setPetTier(tier) {
+            selectedPetTier = tier;
+            document.querySelectorAll('.tier-btn').forEach(btn => btn.classList.remove('active'));
+            const clicked = document.querySelector(`.tier-btn[onclick="setPetTier('${tier}')"]`);
             if (clicked) clicked.classList.add('active');
 
             populatePetsGrid();
