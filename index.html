@@ -967,8 +967,28 @@
             </div>
 
             <div class="filter-buttons">
-                <button class="filter-btn active" onclick="filterPets('all')">All</button>
-                <button class="filter-btn" onclick="filterPets('favorites')">Favorites</button>
+                <button class="filter-btn category-btn active" onclick="setCategory('all')">All</button>
+                <button class="filter-btn category-btn" onclick="setCategory('legendary')">Legendary</button>
+                <button class="filter-btn category-btn" onclick="setCategory('ultrarare')">Ultra Rare</button>
+                <button class="filter-btn category-btn" onclick="setCategory('rare')">Rare</button>
+                <button class="filter-btn category-btn" onclick="setCategory('uncommon')">Uncommon</button>
+                <button class="filter-btn category-btn" onclick="setCategory('common')">Common</button>
+                <button class="filter-btn category-btn" onclick="setCategory('toys')">Toys</button>
+                <button class="filter-btn category-btn" onclick="setCategory('eggs')">Eggs</button>
+                <button class="filter-btn category-btn" onclick="setCategory('food')">Food</button>
+                <button class="filter-btn category-btn" onclick="setCategory('gifts')">Gifts</button>
+                <button class="filter-btn category-btn" onclick="setCategory('petwear')">Pet Wear</button>
+                <button class="filter-btn category-btn" onclick="setCategory('strollers')">Strollers</button>
+                <button class="filter-btn category-btn" onclick="setCategory('vehicles')">Vehicles</button>
+                <button class="filter-btn category-btn" onclick="setCategory('other')">Other</button>
+            </div>
+
+            <div class="value-mode-buttons">
+                <button class="filter-btn mode-btn active" onclick="toggleValueMode('D')">D</button>
+                <button class="filter-btn mode-btn" onclick="toggleValueMode('R')">R</button>
+                <button class="filter-btn mode-btn" onclick="toggleValueMode('F')">F</button>
+                <button class="filter-btn mode-btn" onclick="toggleValueMode('N')">N</button>
+                <button class="filter-btn mode-btn" onclick="toggleValueMode('M')">M</button>
             </div>
 
             <div class="pets-grid" id="petsGrid">
@@ -1092,6 +1112,8 @@
         let theirOffer = [];
         let currentGrid = 'your';
         let currentSlot = 0;
+        let selectedCategory = 'all';
+        let activeValueModes = new Set(['D']); // D = Default/No Potion
         let adminUnlocked = false;
         let editingPetKey = null;
 
@@ -1163,7 +1185,7 @@ async function loadPets() {
                         ? Object.values(rawData)
                         : [];
 
-                return items.map(normalizePetData).filter(Boolean);
+                return items.map(item => normalizePetData(item, file)).filter(Boolean);
             } catch (err) {
                 console.warn(`Unable to load ${file}:`, err);
                 return [];
@@ -1192,11 +1214,13 @@ async function loadPets() {
     }
 }
 
-function normalizePetData(raw) {
+function normalizePetData(raw, sourceFile) {
     if (!raw) return null;
 
-    const name = raw.Name || raw.name || raw.Name || '';
-    const value = raw.Value || raw.value || raw.Value || '';
+    const name = raw.Name || raw.name || '';
+    const value = raw.Value || raw.value || '';
+    const rarity = raw.Rarity || raw.rarity || '';
+    const type = raw.Type || raw.type || '';
     let imageUrl = raw.Image || raw.image_url || raw.imageUrl || '';
 
     if (!name) return null;
@@ -1210,28 +1234,133 @@ function normalizePetData(raw) {
     return {
         name: name.trim(),
         value: String(value).trim(),
-        image_url: imageUrl
+        rarity: String(rarity).trim(),
+        type: String(type).trim(),
+        image_url: imageUrl,
+        __sourceFile: sourceFile || ''
     };
 }
 
 
 
+        // Determine whether a pet should be shown for the currently selected category
+        function petMatchesCategory(pet, category) {
+            if (!category || category === 'all') return true;
+
+            const rarity = (pet.rarity || pet.Rarity || '').toString().toLowerCase();
+            const type = (pet.type || pet.Type || '').toString().toLowerCase();
+            const source = (pet.__sourceFile || '').toString().toLowerCase();
+
+            switch (category) {
+                case 'legendary':
+                    return rarity === 'legendary' || source.includes('legendary');
+                case 'ultrarare':
+                    return rarity === 'ultrarare' || source.includes('ultrarare');
+                case 'rare':
+                    return rarity === 'rare' || source.includes('rare');
+                case 'uncommon':
+                    return rarity === 'uncommon' || source.includes('uncommon');
+                case 'common':
+                    return rarity === 'common' || source.includes('common');
+                case 'toys':
+                    return type === 'toys' || source.includes('toys');
+                case 'eggs':
+                    return type === 'eggs' || source.includes('eggs');
+                case 'food':
+                    return type === 'food' || source.includes('food');
+                case 'gifts':
+                    return type === 'gifts' || source.includes('gifts');
+                case 'petwear':
+                    return type === 'petwear' || source.includes('petwear');
+                case 'strollers':
+                    return type === 'strollers' || source.includes('strollers');
+                case 'vehicles':
+                    return type === 'vehicles' || source.includes('vehicle');
+                case 'other':
+                    // Anything not included above
+                    return !petMatchesCategory(pet, 'legendary')
+                        && !petMatchesCategory(pet, 'ultrarare')
+                        && !petMatchesCategory(pet, 'rare')
+                        && !petMatchesCategory(pet, 'uncommon')
+                        && !petMatchesCategory(pet, 'common')
+                        && !petMatchesCategory(pet, 'toys')
+                        && !petMatchesCategory(pet, 'eggs')
+                        && !petMatchesCategory(pet, 'food')
+                        && !petMatchesCategory(pet, 'gifts')
+                        && !petMatchesCategory(pet, 'petwear')
+                        && !petMatchesCategory(pet, 'strollers')
+                        && !petMatchesCategory(pet, 'vehicles');
+                default:
+                    return true;
+            }
+        }
+
+        function parseValueString(val) {
+            if (val === null || val === undefined) return 0;
+            const str = String(val).trim();
+            if (!str) return 0;
+            // Convert comma decimals to dot and remove non-numeric characters except dot
+            const cleaned = str.replace(/,/g, '.').replace(/[^0-9.\-]/g, '');
+            const n = parseFloat(cleaned);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function getPetValueForMode(pet, modes) {
+            const useMega = modes.has('M');
+            const useNeon = modes.has('N');
+            const useFly = modes.has('F');
+            const useRide = modes.has('R');
+            const useDefault = modes.has('D');
+
+            const prefix = useMega ? 'MValue' : useNeon ? 'NValue' : 'RValue';
+
+            let suffix = '';
+            if (useFly && useRide) suffix = ' - Fly&Ride';
+            else if (useFly) suffix = ' - Fly';
+            else if (useRide) suffix = ' - Ride';
+            else if (useDefault) suffix = ' - NoPotion';
+
+            const key = `${prefix}${suffix}`;
+            const primary = parseValueString(pet[key]);
+            if (primary > 0) return primary;
+
+            const fallbackPrefix = parseValueString(pet[prefix]);
+            if (fallbackPrefix > 0) return fallbackPrefix;
+
+            // Try various known fields
+            const fallback = parseValueString(pet.Value || pet.value || pet.RValue || pet.NValue || pet.MValue);
+            return fallback;
+        }
+
+        function getPetDisplayValue(pet) {
+            const value = getPetValueForMode(pet, activeValueModes);
+            if (value === 0) return '0';
+            return value.toString();
+        }
+
         // Populate pets grid in modal
         function populatePetsGrid() {
             const petsGrid = document.getElementById('petsGrid');
+            const searchTerm = document.getElementById('searchInput')?.value?.toLowerCase()?.trim() || '';
             petsGrid.innerHTML = '';
 
-            allPets.forEach(pet => {
-                const petCard = document.createElement('div');
-                petCard.className = 'pet-card';
-                petCard.innerHTML = `
-                    <img src="${pet.image_url}" alt="${pet.name}" onerror="this.style.display='none'">
-                    <div class="pet-card-name">${pet.name}</div>
-                    <div class="pet-card-value">${pet.value}</div>
-                `;
-                petCard.onclick = () => selectPet(pet);
-                petsGrid.appendChild(petCard);
-            });
+            allPets
+                .filter(pet => petMatchesCategory(pet, selectedCategory))
+                .forEach(pet => {
+                    const nameLower = (pet.name || '').toString().toLowerCase();
+                    if (searchTerm && !nameLower.includes(searchTerm)) return;
+
+                    const displayValue = getPetDisplayValue(pet);
+                    const petCard = document.createElement('div');
+                    petCard.className = 'pet-card';
+                    petCard.innerHTML = `
+                        <img src="${pet.image_url}" alt="${pet.name}" onerror="this.style.display='none'">
+                        <div class="pet-card-name">${pet.name}</div>
+                        <div class="pet-card-value">${displayValue}</div>
+                    `;
+                    petCard.onclick = () => selectPet(pet);
+                    petsGrid.appendChild(petCard);
+                });
         }
 
         // Handle slot clicks (either add pet or remove pet)
@@ -1406,16 +1535,38 @@ function normalizePetData(raw) {
             document.getElementById('searchModal').classList.remove('show');
         }
 
-        // Filter pets
-        function filterPets(type) {
-            // Remove active class from all filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        // Category picker
+        function setCategory(category) {
+            selectedCategory = category;
 
-            // Add active class to clicked button
-            event.target.classList.add('active');
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            const clicked = document.querySelector(`.category-btn[onclick="setCategory('${category}')"]`);
+            if (clicked) clicked.classList.add('active');
 
-            // For now, just show all pets (favorites functionality can be added later)
             populatePetsGrid();
+        }
+
+        // Value mode picker (D = Default/No Potion, R = Ride, F = Fly, N = Neon, M = Mega)
+        function toggleValueMode(mode) {
+            if (activeValueModes.has(mode)) {
+                activeValueModes.delete(mode);
+            } else {
+                activeValueModes.add(mode);
+            }
+
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            activeValueModes.forEach(active => {
+                const btn = document.querySelector(`.mode-btn[onclick="toggleValueMode('${active}')"]`);
+                if (btn) btn.classList.add('active');
+            });
+
+            populatePetsGrid();
+            updateTradeComparison();
+        }
+
+        // Legacy helper (kept for backward compatibility)
+        function filterPets(type) {
+            setCategory(type);
         }
 
         // Update trade comparison
@@ -1451,17 +1602,12 @@ function normalizePetData(raw) {
             progressFill.style.width = progressPercent + '%';
         }
 
-        // Calculate offer value (simplified - you may want to implement proper value calculation)
+        // Calculate offer value using the currently selected value mode
         function calculateOfferValue(offer) {
             let total = 0;
             Object.values(offer).forEach(pet => {
-                if (pet && pet.value) {
-                    // Extract numeric value from strings like "5 Mimic Value"
-                    const match = pet.value.match(/(\d+(?:\.\d+)?)/);
-                    if (match) {
-                        total += parseFloat(match[1]);
-                    }
-                }
+                if (!pet) return;
+                total += getPetValueForMode(pet, activeValueModes);
             });
             return total;
         }
@@ -1470,17 +1616,7 @@ function normalizePetData(raw) {
         function setupEventListeners() {
             // Search functionality
             document.getElementById('searchInput').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const petsGrid = document.getElementById('petsGrid');
-
-                Array.from(petsGrid.children).forEach(petCard => {
-                    const petName = petCard.querySelector('.pet-card-name').textContent.toLowerCase();
-                    if (petName.includes(searchTerm)) {
-                        petCard.style.display = 'block';
-                    } else {
-                        petCard.style.display = 'none';
-                    }
-                });
+                populatePetsGrid();
             });
 
             // Close modal when clicking outside
