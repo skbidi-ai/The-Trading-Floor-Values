@@ -19,6 +19,7 @@
             background: var(--bg-dark);
             min-height: 100vh;
             color: var(--text-main);
+            padding-top: 150px; /* Ensure fixed header doesn't overlap content */
         }
 
 
@@ -1127,40 +1128,90 @@
         }
 
 async function loadPets() {
+    // Load multiple JSON files (new format) and fall back to legacy files if needed.
+    const jsonFiles = [
+        'toys_values.json',
+        'eggs_values.json',
+        'food_values.json',
+        'gifts_values.json',
+        'legendary_values.json',
+        'petwear_values.json',
+        'rare_values.json',
+        'strollers_values.json',
+        'ultrarare_values.json',
+        'uncommon_values.json',
+        'vehicle_values.json',
+        // Legacy fallback
+        'pet_values.json'
+    ];
+
+    const loadedPets = [];
+
     try {
-        // Load from local pet_values.json file
-        const localURL = './pet_values.json';
-        const response = await fetch(localURL, { cache: 'no-store' }); // Avoid caching issues
+        const fetchPromises = jsonFiles.map(async (file) => {
+            try {
+                const response = await fetch(`./${file}`, { cache: 'no-store' });
+                if (!response.ok) {
+                    // It's ok if some files don't exist; just skip them
+                    return [];
+                }
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                const rawData = await response.json();
+                const items = Array.isArray(rawData)
+                    ? rawData
+                    : (typeof rawData === 'object' && rawData !== null)
+                        ? Object.values(rawData)
+                        : [];
 
-        const data = await response.json(); // Parse JSON directly
+                return items.map(normalizePetData).filter(Boolean);
+            } catch (err) {
+                console.warn(`Unable to load ${file}:`, err);
+                return [];
+            }
+        });
 
-        // Handle both array and object formats
-        if (Array.isArray(data)) {
-            allPets = data.filter(
-                pet => pet.image_url && pet.image_url !== 'null' && pet.image_url.trim() !== ''
-            );
-            console.log('Successfully loaded', allPets.length, 'pets from local JSON');
-        } else if (typeof data === 'object' && data !== null) {
-            // Convert object format to array format for compatibility
-            allPets = Object.values(data).filter(
-                pet => pet && pet.image_url && pet.image_url !== 'null' && pet.image_url.trim() !== ''
-            );
-            console.log('Successfully loaded', allPets.length, 'pets from local JSON (object format)');
-        } else {
-            console.error('Invalid data format in JSON:', data);
-            allPets = [];
-        }
-        
+        const results = await Promise.all(fetchPromises);
+        results.forEach(arr => loadedPets.push(...arr));
+
+        // Deduplicate by name (case-insensitive)
+        const petMap = new Map();
+        loadedPets.forEach(pet => {
+            const nameKey = pet.name?.toLowerCase()?.trim();
+            if (!nameKey) return;
+            if (!petMap.has(nameKey)) petMap.set(nameKey, pet);
+        });
+
+        allPets = Array.from(petMap.values());
+
+        console.log('Successfully loaded', allPets.length, 'pets from JSON files');
         populatePetsGrid();
     } catch (error) {
-        console.error('Error loading pets from local JSON:', error);
+        console.error('Error loading pets from JSON files:', error);
         allPets = [];
-        document.getElementById('petsGrid').innerHTML = '<div style="padding: 20px; text-align: center; color: #e66060;">Failed to load pets. Make sure pet_values.json is in the same directory.</div>';
+        document.getElementById('petsGrid').innerHTML = '<div style="padding: 20px; text-align: center; color: #e66060;">Failed to load pets. Make sure the JSON files are in the same directory.</div>';
     }
+}
+
+function normalizePetData(raw) {
+    if (!raw) return null;
+
+    const name = raw.Name || raw.name || raw.Name || '';
+    const value = raw.Value || raw.value || raw.Value || '';
+    let imageUrl = raw.Image || raw.image_url || raw.imageUrl || '';
+
+    if (!name) return null;
+
+    // If image URL isn't provided, fall back to the elvebredd thumbnail URL
+    if (!imageUrl || imageUrl === 'null' || (typeof imageUrl === 'string' && imageUrl.trim() === '')) {
+        const encodedName = encodeURIComponent(name.trim());
+        imageUrl = `https://elvebredd.com/images/pets/${encodedName}.png`;
+    }
+
+    return {
+        name: name.trim(),
+        value: String(value).trim(),
+        image_url: imageUrl
+    };
 }
 
 
