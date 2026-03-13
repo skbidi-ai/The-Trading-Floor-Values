@@ -1,0 +1,532 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg-dark: #0a0a0a;
+  --text-main: #f8fafc;
+  --text-muted: #a1a1aa;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #0ea5e9;
+  --accent-tertiary: #ec4899;
+  
+  /* Material/Fluent Glass */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+}
+
+/* --- Base & Scrollbar --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  scroll-behavior: smooth;
+  font-family: 'Outfit', sans-serif;
+  cursor: none; /* Hide default cursor for custom crosshair */
+}
+
+html {
+  font-size: 62.5%;
+  overflow-x: hidden;
+}
+
+/* Custom Sliding Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, var(--accent-tertiary), var(--accent-secondary));
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height:1.6;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* --- Custom Cursor (Crosshair + Aura) --- */
+.cursor-dot,
+.cursor-outline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+
+.cursor-outline {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+/* --- Animated Backgrounds (Aurora + Canvas) --- */
+.aurora-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+/* Particle Canvas Layer */
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none; /* Let clicks pass through */
+}
+
+/* --- Cinematic Entrance Reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger Delays for Grid Elements */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* --- Cyberpunk Text Glitch Effect --- */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  display: block;
+}
+
+.glitch-text::before {
+  color: #0ff;
+  z-index: -1;
+  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  color: #f0f;
+  z-index: -2;
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+/* Disable Glitch when not hovered for subtlety */
+.glitch-text:not(:hover)::before,
+.glitch-text:not(:hover)::after {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+  40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
+  100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
+  20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 1px); }
+  40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, 2px); }
+  60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, -2px); }
+  80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 1px); }
+  100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -1px); }
+}
+
+/* --- Layout & Typography --- */
+section {
+  padding: 10rem 5% 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: 4.5rem;
+  font-weight: 800;
+  margin-bottom: 4rem;
+  background: linear-gradient(to right, #fff, var(--text-muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.heading span {
+  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Header / Fluent Nav --- */
+.header {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  padding: 1.5rem 3rem;
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+  transition: var(--transition);
+}
+
+.logo {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -.5px;
+}
+
+.logo span {
+  color: var(--accent-primary);
+}
+
+.navbar a {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 3rem;
+  transition: var(--transition);
+}
+
+.navbar a:hover, .navbar a.active {
+  color: var(--text-main);
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+#menu-icon {
+  font-size: 3rem;
+  display: none;
+}
+
+/* --- Bento Grid Layouts --- */
+
+/* Hero Bento */
+.hero-bento {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-top: 5rem;
+}
+
+.bento-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 4rem;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.1s ease-out, border-color 0.3s;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer Hover Effect */
+.bento-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.bento-card:hover::before {
+  opacity: 1;
+}
+
+.bento-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hero-main h3 { font-size: 2.4rem; color: var(--text-muted); font-weight: 500; }
+.hero-main h1 { 
+  font-size: 7rem; 
+  font-weight: 900; 
+  line-height: 1.1; 
+  letter-spacing: -2px;
+  margin: 1rem 0;
+  background: linear-gradient(to right, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-main .text-animation { font-size: 2.8rem; font-weight: 600; margin-bottom: 3rem; color: var(--accent-secondary); }
+.hero-main p { font-size: 1.8rem; color: var(--text-muted); max-width: 500px; }
+
+.hero-img-card {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(14, 165, 233, 0.2));
+}
+
+.hero-img-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  opacity: 0.9;
+  filter: contrast(1.1);
+}
+
+/* --- Marquee --- */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(139, 92, 246, 0.1);
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 2rem 0;
+  margin: 5rem 0;
+  white-space: nowrap;
+  display: flex;
+}
+
+.marquee-content {
+  display: flex;
+  gap: 4rem;
+  animation: scroll-left 20s linear infinite;
+  padding-right: 4rem;
+}
+
+.marquee-content span {
+  font-size: 3rem;
+  font-weight: 900;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+.marquee-content span.filled {
+  color: var(--accent-primary);
+  -webkit-text-stroke: 0;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* --- About Dense Bento Grid --- */
+.about-bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2rem;
+}
+
+.about-intro {
+  grid-column: span 2;
+}
+
+.about-intro h2 { font-size: 3.5rem; margin-bottom: 1rem; }
+.about-intro p { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 2rem;}
+
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(236, 72, 153, 0.1));
+}
+
+.stats-card i { font-size: 5rem; color: var(--accent-tertiary); margin-bottom: 1rem; }
+.stats-card h4 { font-size: 2rem; }
+
+.skills-card {
+  grid-column: span 3;
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.skill-tag {
+  padding: 1rem 2.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 100px;
+  color: var(--text-main);
+  font-size: 1.6rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: var(--transition);
+}
+
+.skill-tag i { font-size: 2rem; color: var(--accent-secondary); }
+
+.skill-tag:hover {
+  background: rgba(14, 165, 233, 0.2);
+  border-color: var(--accent-secondary);
+  transform: translateY(-5px);
+}
+
+/* --- Socials Stack --- */
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.social-card {
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.social-card i.main-icon {
+  font-size: 6rem;
+  color: var(--accent-primary);
+  transition: var(--transition);
+}
+
+.social-card:hover i.main-icon {
+  transform: scale(1.2) translateY(-10px);
+  filter: drop-shadow(0 0 20px var(--accent-primary));
+}
+
+.social-card h4 { font-size: 2.4rem; font-weight: 700; }
+.social-card p { font-size: 1.4rem; color: var(--text-muted); }
+
+.btn-icon {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  margin-top: 1rem;
+  transition: var(--transition);
+}
+.social-card:hover .btn-icon {
+  background: var(--accent-primary);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* --- Footer --- */
+.footer {
+  text-align: center;
+  padding: 4rem;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 5rem;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media(max-width: 1024px) {
+  .hero-bento { grid-template-columns: 1fr; }
+  .hero-img-card { height: 400px; }
+  .about-bento { grid-template-columns: 1fr 1fr; }
+  .about-intro { grid-column: span 2; }
+  .skills-card { grid-column: span 2; }
+  .social-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media(max-width: 768px) {
+  .header { width: 95%; top: 10px; padding: 1.5rem 2rem; }
+  #menu-icon { display: block; cursor: pointer; }
+  .navbar {
+    position: absolute;
+    top: 100%; left: 0; width: 100%;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    flex-direction: column;
+    display: none;
+    gap: 2rem;
+    border: 1px solid var(--glass-border);
+  }
+  .navbar.active { display: flex; }
+  .navbar a { margin: 0; font-size: 2rem; }
+  
+  .hero-main h1 { font-size: 5rem; }
+  .about-bento { grid-template-columns: 1fr; }
+  .about-intro, .skills-card { grid-column: span 1; }
+  .social-grid { grid-template-columns: 1fr; }
+  section { padding: 12rem 5% 4rem; }
+}
+
+@media(pointer: coarse) {
+  /* Hide custom cursor on touch devices */
+  * { cursor: auto; }
+  .cursor-dot, .cursor-outline { display: none; }
+}
