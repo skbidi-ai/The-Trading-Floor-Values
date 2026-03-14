@@ -1345,12 +1345,12 @@
             toggleValueMode(valueBaseMode); // Ensure D is active by default
         }
 
-        // Create 3x3 grid slots
+        // Create initial grid slots (will expand dynamically)
         function createGridSlots() {
             const yourGrid = document.getElementById('yourGrid');
             const theirGrid = document.getElementById('theirGrid');
 
-            // Create 9 slots for each grid
+            // Start with 9 slots for each grid
             for (let i = 0; i < 9; i++) {
                 // Your grid slot
                 const yourSlot = document.createElement('div');
@@ -1655,7 +1655,7 @@ function normalizePetData(raw, sourceFile) {
 
         // Get first empty slot index
         function getFirstEmptySlot(offerArray) {
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 18; i++) {
                 if (!offerArray[i]) {
                     return i;
                 }
@@ -1714,14 +1714,14 @@ function normalizePetData(raw, sourceFile) {
             
             // Get all pets in order, filtering out empty slots
             const pets = [];
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 18; i++) {
                 if (offerArray[i]) {
                     pets.push(offerArray[i]);
                 }
             }
             
             // Clear the offer array
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 18; i++) {
                 delete offerArray[i];
             }
             
@@ -1744,7 +1744,29 @@ function normalizePetData(raw, sourceFile) {
             const gridElement = document.getElementById(gridId);
             const offerArray = grid === 'your' ? yourOffer : theirOffer;
             
-            for (let i = 0; i < 9; i++) {
+            // Count current pets
+            let petCount = 0;
+            for (let i = 0; i < 18; i++) {
+                if (offerArray[i]) petCount++;
+            }
+            
+            // Calculate required slots: ceil((petCount + 1) / 3) * 3, but cap at 18
+            const requiredRows = Math.ceil((petCount + 1) / 3);
+            const requiredSlots = Math.min(18, requiredRows * 3);
+            
+            // Adjust number of slot elements
+            while (gridElement.children.length < requiredSlots) {
+                const newSlot = document.createElement('div');
+                newSlot.className = 'pet-slot';
+                newSlot.innerHTML = '<div class="add-button">+</div>';
+                gridElement.appendChild(newSlot);
+            }
+            while (gridElement.children.length > requiredSlots) {
+                gridElement.removeChild(gridElement.lastChild);
+            }
+            
+            // Update each slot
+            for (let i = 0; i < requiredSlots; i++) {
                 const slot = gridElement.children[i];
                 const pet = offerArray[i];
                 
