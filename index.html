@@ -1079,6 +1079,10 @@
                         <input type="text" class="search-bar" id="searchInput" placeholder="Search" />
                     </div>
 
+                    <div class="pets-grid" id="petsGrid">
+                        <!-- Pet cards will be populated by JavaScript -->
+                    </div>
+
                     <div class="tier-buttons" id="tierButtons">
                         <button class="filter-btn tier-btn active" onclick="setPetTier('legendary')">Legendary</button>
                         <button class="filter-btn tier-btn" onclick="setPetTier('ultrarare')">Ultra Rare</button>
@@ -1088,15 +1092,11 @@
                     </div>
 
                     <div class="value-mode-buttons" id="valueModeButtons">
-                        <button class="filter-btn mode-btn base-btn" data-mode="D" onclick="toggleValueMode('D')">D</button>
                         <button class="filter-btn mode-btn modifier-btn" data-mode="R" onclick="toggleValueMode('R')">R</button>
                         <button class="filter-btn mode-btn modifier-btn" data-mode="F" onclick="toggleValueMode('F')">F</button>
+                        <button class="filter-btn mode-btn base-btn" data-mode="D" onclick="toggleValueMode('D')">D</button>
                         <button class="filter-btn mode-btn base-btn" data-mode="N" onclick="toggleValueMode('N')">N</button>
                         <button class="filter-btn mode-btn base-btn" data-mode="M" onclick="toggleValueMode('M')">M</button>
-                    </div>
-
-                    <div class="pets-grid" id="petsGrid">
-                        <!-- Pet cards will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -1357,6 +1357,9 @@ function normalizePetData(raw, sourceFile) {
     }
 
     return {
+        // Keep all original fields (including RValue / NValue / MValue / RValue - NoPotion etc.)
+        // so the value calculator can use them.
+        ...raw,
         name: name.trim(),
         value: String(value).trim(),
         rarity: String(rarity).trim(),
@@ -1726,6 +1729,10 @@ function normalizePetData(raw, sourceFile) {
                 document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
                 const baseBtn = document.querySelector(`.mode-btn[onclick="toggleValueMode('${mode}')"]`);
                 if (baseBtn) baseBtn.classList.add('active');
+
+                // Update value displays when the base mode changes
+                populatePetsGrid();
+                updateTradeComparison();
                 return;
             }
 
