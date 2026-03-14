@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>The Trading Floor</title>
-    <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1414528231834386545/1472158249988915234/image.png">
+    <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1442583460714909788/1482175390943285279/Gemini_Generated_Image_7d7odf7d7odf7d7o.png?ex=69b5fee6&is=69b4ad66&hm=07f4baea46f0d768c11e7e72f79aeef488450fd14b574da4f556d3905b530cf9&=&format=webp&quality=lossless&width=880&height=880">
     <link rel="stylesheet" href="boxicons.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -224,13 +224,14 @@
 .trade-header {
     position: relative;
 
-    width: 53vw;
+    /* Keep the header centered and responsive on mobile */
+    width: min(100%, 660px);
     margin: 0 auto 50px auto;
 
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 75px;
-    padding: 30px 25px;
+    padding: 22px 20px;
 
     display: flex;
     align-items: center;
@@ -956,13 +957,27 @@
             .trade-content {
                 flex-wrap: nowrap;
                 overflow-x: auto;
-                gap: 40px;
+                justify-content: flex-start;
+                gap: 24px;
+                padding: 0 12px;
             }
 
             .trade-header {
                 flex-direction: column;
-                gap: 45px;
+                gap: 28px;
                 text-align: center;
+                width: 100%;
+                padding: 18px 16px;
+            }
+
+            .pet-grid {
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .pet-slot {
+                width: 90px;
+                height: 90px;
             }
 
             .status-indicator {
@@ -1014,7 +1029,7 @@
     <!-- Header -->
     <div class="header">
         <div class="logo">
-            <img src="https://media.discordapp.net/attachments/1414528231834386545/1472158249988915234/image.png" alt="The Trading Floor" class="logo-img" />
+            <img src="https://media.discordapp.net/attachments/1442583460714909788/1482175390943285279/Gemini_Generated_Image_7d7odf7d7odf7d7o.png?ex=69b5fee6&is=69b4ad66&hm=07f4baea46f0d768c11e7e72f79aeef488450fd14b574da4f556d3905b530cf9&=&format=webp&quality=lossless&width=880&height=880" alt="The Trading Floor" class="logo-img" />
             <span>The Trading Floor</span>
         </div>
         <div class="nav-tabs">
