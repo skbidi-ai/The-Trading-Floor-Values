@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS Value Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>The Trading Floor</title>
     <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1414528231834386545/1472158249988915234/image.png">
     <link rel="stylesheet" href="boxicons.min.css">
     <link rel="stylesheet" href="style.css">
@@ -37,10 +37,22 @@
         }
 
         .logo {
-            font-size: 36px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 32px;
             font-weight: 800;
             color: var(--text-main);
             letter-spacing: -1px;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
         }
 
         .nav-tabs {
@@ -942,7 +954,8 @@
         /* Responsive */
         @media (max-width: 768px) {
             .trade-content {
-                flex-direction: column;
+                flex-wrap: nowrap;
+                overflow-x: auto;
                 gap: 40px;
             }
 
@@ -1000,7 +1013,10 @@
     <div class="cursor-outline"></div>
     <!-- Header -->
     <div class="header">
-        <div class="logo">Game Services</div>
+        <div class="logo">
+            <img src="https://media.discordapp.net/attachments/1414528231834386545/1472158249988915234/image.png" alt="The Trading Floor" class="logo-img" />
+            <span>The Trading Floor</span>
+        </div>
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="switchTab('tradeCalculator')">Value Calculator</div>
             <div class="nav-tab" onclick="switchTab('weightCalculator')">Pet Weight Calculator</div>
@@ -1371,6 +1387,14 @@ function normalizePetData(raw, sourceFile) {
 
 
 
+        // Helper: Match a tier name (like "common" or "uncommon") against the source file name.
+        // Ensures "common" doesn't match "uncommon", and "rare" doesn't match "ultrarare".
+        function sourceMatchesTier(source, tier) {
+            if (!source || !tier) return false;
+            const parts = source.toString().toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+            return parts.includes(tier);
+        }
+
         // Determine whether a pet should be shown for the currently selected category
         function petMatchesCategory(pet, category) {
             if (!category || category === 'all') return true;
@@ -1382,29 +1406,29 @@ function normalizePetData(raw, sourceFile) {
             if (category === 'pets') {
                 // Pets category only includes these tier files
                 if (selectedPetTier && selectedPetTier !== 'all') {
-                    return source.includes(selectedPetTier);
+                    return sourceMatchesTier(source, selectedPetTier);
                 }
                 // If no pet tier is selected, show all pet tiers
                 return (
-                    source.includes('legendary') ||
-                    source.includes('ultrarare') ||
-                    source.includes('rare') ||
-                    source.includes('uncommon') ||
-                    source.includes('common')
+                    sourceMatchesTier(source, 'legendary') ||
+                    sourceMatchesTier(source, 'ultrarare') ||
+                    sourceMatchesTier(source, 'rare') ||
+                    sourceMatchesTier(source, 'uncommon') ||
+                    sourceMatchesTier(source, 'common')
                 );
             }
 
             switch (category) {
                 case 'legendary':
-                    return source.includes('legendary');
+                    return sourceMatchesTier(source, 'legendary');
                 case 'ultrarare':
-                    return source.includes('ultrarare');
+                    return sourceMatchesTier(source, 'ultrarare');
                 case 'rare':
-                    return source.includes('rare');
+                    return sourceMatchesTier(source, 'rare');
                 case 'uncommon':
-                    return source.includes('uncommon');
+                    return sourceMatchesTier(source, 'uncommon');
                 case 'common':
-                    return source.includes('common');
+                    return sourceMatchesTier(source, 'common');
                 case 'toys':
                     return type === 'toys' || source.includes('toys');
                 case 'eggs':
@@ -1556,7 +1580,7 @@ function normalizePetData(raw, sourceFile) {
                 return;
             }
 
-            // Add pet to the first available slot
+            // Add pet to the first available slot (store its value at selection time)
             addPetToSlot(pet, currentGrid, targetSlot);
             reorganizeGrid(currentGrid);
             updateTradeComparison();
@@ -1566,9 +1590,13 @@ function normalizePetData(raw, sourceFile) {
         // Add pet to specific slot
         function addPetToSlot(pet, grid, slotIndex) {
             const offerArray = grid === 'your' ? yourOffer : theirOffer;
-            // Add pet to offer array
-            offerArray[slotIndex] = pet;
-            // Update display will be called by reorganizeGrid or updateGridDisplay
+            // Store a shallow copy of the pet plus the value/mode at the time of selection.
+            // That way changing the global mode later does not affect already placed pets.
+            offerArray[slotIndex] = {
+                ...pet,
+                selectedValue: getPetValueForMode(pet, valueBaseMode, valueModifiers),
+                selectedMode: { base: valueBaseMode, modifiers: { ...valueModifiers } }
+            };
         }
 
         // Remove pet from slot and reorganize grid
@@ -1785,12 +1813,17 @@ function normalizePetData(raw, sourceFile) {
             progressFill.style.width = progressPercent + '%';
         }
 
-        // Calculate offer value using the currently selected value mode
+        // Calculate offer value using the value stored at the time a pet was added.
+        // This ensures changing the mode later does not change already-selected pets.
         function calculateOfferValue(offer) {
             let total = 0;
-            Object.values(offer).forEach(pet => {
-                if (!pet) return;
-                total += getPetValueForMode(pet, valueBaseMode, valueModifiers);
+            Object.values(offer).forEach(entry => {
+                if (!entry) return;
+                if (entry && typeof entry === 'object' && entry.selectedValue !== undefined) {
+                    total += entry.selectedValue;
+                } else {
+                    total += getPetValueForMode(entry, valueBaseMode, valueModifiers);
+                }
             });
             return total;
         }
