@@ -220,6 +220,77 @@
             border-color: rgba(14, 165, 233, 0.4);
         }
 
+        /* About Page Styles */
+        .about-content {
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .about-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .about-links {
+            margin: 30px 0;
+        }
+
+        .about-links h3 {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .about-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .about-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .discord-link {
+            background: rgba(88, 101, 242, 0.1);
+            border-color: rgba(88, 101, 242, 0.3);
+        }
+
+        .discord-link:hover {
+            background: rgba(88, 101, 242, 0.3);
+            border-color: rgba(88, 101, 242, 0.6);
+        }
+
+        .roblox-link {
+            background: rgba(226, 35, 26, 0.1);
+            border-color: rgba(226, 35, 26, 0.3);
+        }
+
+        .roblox-link:hover {
+            background: rgba(226, 35, 26, 0.3);
+            border-color: rgba(226, 35, 26, 0.6);
+        }
+
+        .about-text h3 {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
         /* Trade Comparison Header */
 .trade-header {
     position: relative;
@@ -1044,7 +1115,7 @@
         </div>
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="switchTab('tradeCalculator')">Value Calculator</div>
-            <div class="nav-tab" onclick="switchTab('weightCalculator')">Pet Weight Calculator</div>
+            <div class="nav-tab" onclick="switchTab('aboutPage')">About Me</div>
             <div class="nav-tab" onclick="switchTab('adminPanel')">Admin Panel</div>
         </div>
     </div>
@@ -1144,31 +1215,30 @@
         </div>
     </div>
 
-    <!-- Pet Weight Calculator Section -->
-    <div class="weight-calculator" id="weightCalculator" data-tilt>
-        <div class="calculator-title">Pet Weight Calculator</div>
+    <!-- About Me Section -->
+    <div class="weight-calculator" id="aboutPage" data-tilt>
+        <div class="calculator-title">About The Trading Floor</div>
 
-        <div class="form-group">
-            <label class="form-label" for="currentAge">Current Age (1-100)</label>
-            <input type="number" class="form-input" id="currentAge" min="1" max="100" placeholder="Enter current age">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="currentWeight">Current Weight (kg)</label>
-            <input type="number" class="form-input" id="currentWeight" min="0.1" step="0.1" placeholder="Enter current weight">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="targetAge">Target Age - Optional</label>
-            <input type="number" class="form-input" id="targetAge" min="1" max="100" placeholder="Leave empty to see all ages">
-        </div>
-
-        <button class="calculate-btn" onclick="calculateWeights()">Calculate Weights</button>
-
-        <div class="results-container" id="resultsContainer">
-            <h3 style="text-align: center; color: var(--text-main); margin-bottom: 15px;">Weight Predictions</h3>
-            <div class="results-grid" id="resultsGrid">
-                <!-- Results will be populated here -->
+        <div class="about-content">
+            <p contenteditable="true">Welcome to The Trading Floor! This is a community-driven platform for Adopt Me! pet value calculations and trading insights.</p>
+            
+            <p contenteditable="true">Our mission is to provide accurate, up-to-date pet values to help you make informed trading decisions in Adopt Me!.</p>
+            
+            <div class="about-links">
+                <h3>Join Our Community</h3>
+                <a href="https://discord.gg/your-discord-link" class="about-link discord-link" target="_blank">
+                    <i class="bx bxl-discord"></i> Join our Discord
+                </a>
+                <a href="https://roblox.com/groups/your-group" class="about-link roblox-link" target="_blank">
+                    <i class="bx bxl-roblox"></i> Roblox Group
+                </a>
+            </div>
+            
+            <div class="about-text">
+                <h3>About Us</h3>
+                <p contenteditable="true">The Trading Floor was created to help Adopt Me! players navigate the complex world of pet trading. Our value calculator uses real-time data from thousands of trades to provide the most accurate pet values possible.</p>
+                
+                <p contenteditable="true">Whether you're a seasoned trader or just starting out, our tools are designed to help you succeed in the Adopt Me! economy.</p>
             </div>
         </div>
     </div>
@@ -1703,9 +1773,48 @@ function normalizePetData(raw, sourceFile) {
 
         // Create pet content HTML
         function createPetContent(pet) {
+            let overlayUrl = null;
+            const base = pet.selectedMode.base;
+            const modifiers = pet.selectedMode.modifiers;
+            const hasR = modifiers.R;
+            const hasF = modifiers.F;
+
+            if (base === 'D') {
+                if (hasR && hasF) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rfd.png';
+                } else if (hasR) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rd.png';
+                }
+                // D Normal or D with F only: no overlay
+            } else if (base === 'N') {
+                if (hasR && hasF) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rfn.png';
+                } else if (hasR) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rn.png';
+                } else if (hasF) {
+                    // Assuming no F only for N, but if needed
+                } else {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/n.png';
+                }
+            } else if (base === 'M') {
+                if (hasR && hasF) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rfm.png';
+                } else if (hasR) {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/rm.png';
+                } else if (hasF) {
+                    // Assuming no F only for M
+                } else {
+                    overlayUrl = 'https://adoptmewfl.com/overlay/m.png';
+                }
+            }
+
             if (pet.image_url && pet.image_url !== 'null' && pet.image_url.trim() !== '') {
-                return `<img src="${pet.image_url}" alt="${pet.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
-                        <div class="pet-name">${pet.name}</div>`;
+                let html = `<img src="${pet.image_url}" alt="${pet.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`;
+                if (overlayUrl) {
+                    html += `<img src="${overlayUrl}" alt="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 6px; pointer-events: none;">`;
+                }
+                html += `<div class="pet-name">${pet.name}</div>`;
+                return html;
             } else {
                 // Create placeholder
                 const words = pet.name.split(' ');
@@ -1879,7 +1988,7 @@ function normalizePetData(raw, sourceFile) {
         function switchTab(tabId) {
             // Hide all tabs
             document.getElementById('tradeCalculator').style.display = 'none';
-            document.getElementById('weightCalculator').style.display = 'none';
+            document.getElementById('aboutPage').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
 
             // Remove active class from all nav tabs
@@ -1889,9 +1998,9 @@ function normalizePetData(raw, sourceFile) {
             if (tabId === 'tradeCalculator') {
                 document.getElementById('tradeCalculator').style.display = 'block';
                 document.querySelector('.nav-tab[onclick="switchTab(\'tradeCalculator\')"]').classList.add('active');
-            } else if (tabId === 'weightCalculator') {
-                document.getElementById('weightCalculator').style.display = 'block';
-                document.querySelector('.nav-tab[onclick="switchTab(\'weightCalculator\')"]').classList.add('active');
+            } else if (tabId === 'aboutPage') {
+                document.getElementById('aboutPage').style.display = 'block';
+                document.querySelector('.nav-tab[onclick="switchTab(\'aboutPage\')"]').classList.add('active');
             } else if (tabId === 'adminPanel') {
                 document.getElementById('adminPanel').style.display = 'block';
                 document.querySelector('.nav-tab[onclick="switchTab(\'adminPanel\')"]').classList.add('active');
