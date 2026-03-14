@@ -954,30 +954,39 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            body {
+                overflow-x: auto;
+            }
+
             .trade-content {
-                flex-wrap: nowrap;
+                /* Keep desktop layout for mobile; allow horizontal scroll instead of wrapping */
+                width: max-content;
                 overflow-x: auto;
                 justify-content: flex-start;
                 gap: 24px;
                 padding: 0 12px;
             }
 
-            .trade-header {
-                flex-direction: column;
-                gap: 28px;
-                text-align: center;
-                width: 100%;
-                padding: 18px 16px;
+            .offer-section {
+                /* Prevent the grids from shrinking on narrow screens */
+                flex: 0 0 auto;
             }
 
+            .trade-header {
+                /* Keep the header layout consistent with desktop view */
+                width: max-content;
+                padding: 18px 16px;
+            }
+        
+            /* Keep grid slot size the same as desktop so the layout stays consistent */
             .pet-grid {
-                gap: 8px;
-                padding: 10px;
+                gap: 10px;
+                padding: 14px;
             }
 
             .pet-slot {
-                width: 90px;
-                height: 90px;
+                width: 120px;
+                height: 120px;
             }
 
             .status-indicator {
