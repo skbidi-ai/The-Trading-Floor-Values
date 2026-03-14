@@ -224,8 +224,9 @@
 .trade-header {
     position: relative;
 
-    /* Keep the header centered and responsive on mobile */
-    width: min(100%, 660px);
+    /* Allow the header to grow to fit its contents while staying centered */
+    width: 100%;
+    max-width: 1000px;
     margin: 0 auto 50px auto;
 
     background: rgba(255, 255, 255, 0.06);
@@ -280,7 +281,8 @@
            display: flex;
            flex-direction: column;
            align-items: center;
-           flex: 1;
+           flex: 1 1 0;
+           min-width: 0;
            margin: 0 10px;
         }
 
@@ -330,12 +332,14 @@
         }
 
         .progress-bar {
-            width: 600px;
+            width: 100%;
+            max-width: 600px;
             height: 15px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 999px;
             overflow: hidden;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+            min-width: 220px;
         }
 
         .progress-fill {
