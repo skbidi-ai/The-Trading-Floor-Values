@@ -955,38 +955,40 @@
         /* Responsive */
         @media (max-width: 768px) {
             body {
-                overflow-x: auto;
+                overflow-x: hidden;
             }
 
-            .trade-content {
-                /* Keep desktop layout for mobile; allow horizontal scroll instead of wrapping */
-                width: max-content;
-                overflow-x: auto;
-                justify-content: flex-start;
-                gap: 24px;
-                padding: 0 12px;
-            }
+.container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
 
-            .offer-section {
-                /* Prevent the grids from shrinking on narrow screens */
-                flex: 0 0 auto;
-            }
+        .trade-content {
+            justify-content: center;
+            gap: 100px;
+        }
 
-            .trade-header {
-                /* Keep the header layout consistent with desktop view */
-                width: max-content;
-                padding: 18px 16px;
-            }
-        
-            /* Keep grid slot size the same as desktop so the layout stays consistent */
-            .pet-grid {
-                gap: 10px;
-                padding: 14px;
-            }
+        .trade-header {
+            padding: 22px 20px;
+        }
+    
+        /* Keep grid slot size the same as desktop so the layout stays consistent */
+        .pet-grid {
+            gap: 10px;
+            padding: 14px;
+        }
 
-            .pet-slot {
-                width: 120px;
-                height: 120px;
+        .pet-slot {
+            width: 120px;
+            height: 120px;
+        }
+
+        /* Mobile scaling: scale the whole container down so it fits the viewport width */
+        .container {
+            transform-origin: top center;
+            transform: scale(0.75);
+            width: 133.3333%; /* 100 / 0.75 */
             }
 
             .status-indicator {
