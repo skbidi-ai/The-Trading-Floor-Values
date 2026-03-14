@@ -264,6 +264,11 @@
             transform: translateY(-2px);
         }
 
+        .about-link img {
+            width: 20px;
+            height: 20px;
+        }
+
         .discord-link {
             background: rgba(88, 101, 242, 0.1);
             border-color: rgba(88, 101, 242, 0.3);
@@ -1227,10 +1232,10 @@
             <div class="about-links">
                 <h3>Join Our Community</h3>
                 <a href="https://discord.gg/yKYYwFGWmm" class="about-link discord-link" target="_blank">
-                    <i class="bx bxl-discord"></i> Join our Discord
+                    <img src="https://elvebredd.com/images/misc/discord.png" alt="Discord"> Join our Discord
                 </a>
                 <a href="https://www.roblox.com/communities/1027661337/Scarour" class="about-link roblox-link" target="_blank">
-                    <i class="bx bxl-roblox"></i> Roblox Group
+                    <img src="https://elvebredd.com/images/misc/roblox.png" alt="Roblox"> Roblox Group
                 </a>
             </div>
             
@@ -1597,8 +1602,9 @@ function normalizePetData(raw, sourceFile) {
                 return value.toString();
             }
 
-            // Non-pets just show base value field
-            const baseValue = parseValueString(pet.Value || pet.value);
+            // For eggs, use RValue; for others, use Value
+            let valueField = selectedMainCategory === 'eggs' ? 'RValue' : 'Value';
+            const baseValue = parseValueString(pet[valueField] || pet.value);
             return baseValue === 0 ? '0' : baseValue.toString();
         }
 
@@ -1750,9 +1756,9 @@ function normalizePetData(raw, sourceFile) {
                 if (offerArray[i]) petCount++;
             }
             
-            // Calculate required slots: ceil((petCount + 1) / 3) * 3, but cap at 18
+            // Calculate required slots: ceil((petCount + 1) / 3) * 3, min 9, max 18
             const requiredRows = Math.ceil((petCount + 1) / 3);
-            const requiredSlots = Math.min(18, requiredRows * 3);
+            const requiredSlots = Math.max(9, Math.min(18, requiredRows * 3));
             
             // Adjust number of slot elements
             while (gridElement.children.length < requiredSlots) {
